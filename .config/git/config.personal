@@ -1,0 +1,6 @@
+# -*- mode: gitconfig; -*-
+# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/config.personal][~/.config/git/config.personal:1]]
+[user]
+    name = "7696122"
+    email = "7696122@gmail.com"
+# ~/.config/git/config.personal:1 ends here

@@ -1,0 +1,7 @@
+# -*- mode: gitignore; -*-
+# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/ignore][~/.config/git/ignore:1]]
+.DS_Store
+.projectile
+.tern-port
+.projectile
+# ~/.config/git/ignore:1 ends here

@@ -1,0 +1,31 @@
+# -*- mode: gitconfig; -*-
+# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/config][~/.config/git/config:1]]
+[core]
+    precomposeunicode = true
+    quotepath = false
+    # excludesfile = ~/.gitignore_global
+[includeIf "gitdir:/Users/mnml/Works/"]
+    path = "~/.config/git/config.work"
+[includeIf "gitdir:/Volumes/Data/Works/"]
+    path = "~/.config/git/config.work"; };
+[includeIf "gitdir:/Users/mnml/Developer/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/leetcode/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/dotfiles/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/StudioProjects/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Volumes/Data/Developer/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/public_html/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/org/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:/Users/mnml/dotfiles/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:~/Dropbox/org/"]
+    path = "~/.config/git/config.personal"; };
+[includeIf "gitdir:~/Library/CloudStorage/Dropbox/"]
+    path = "~/.config/git/config.personal"; };
+# ~/.config/git/config:1 ends here
