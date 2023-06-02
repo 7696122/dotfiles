@@ -4,7 +4,7 @@ return {
     dependencies = {
       "MunifTanjim/nui.nvim",
     },
-    opts = function (_, opts)
+    opts = function(_, opts)
       require("telescope").setup({
         extensions = {
           package_info = {
@@ -15,6 +15,6 @@ return {
       })
 
       require("telescope").load_extension("package_info")
-    end
+    end,
   },
 }
