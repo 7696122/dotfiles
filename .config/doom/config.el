@@ -77,7 +77,7 @@
 
 (normal-erase-is-backspace-mode +1)
 (define-key key-translation-map [?\C-h] [?\C-?])
-(setq +format-with-lsp nil)
+(setq +format-with-lsp t)
 (setq org-roam-directory org-directory)
 
 (setq default-input-method "korean-hangul")
@@ -110,7 +110,8 @@
 (use-package! company
   :config
   (setq company-minimum-prefix-length 1)
-  (setq company-insertion-on-trigger nil))
+  (setq company-insertion-on-trigger nil)
+  )
 
 (use-package! company-quickhelp
   :hook (company-mode . company-quickhelp-mode)
@@ -186,120 +187,46 @@
 
 (use-package! eldoc
   :config
-  (setq eldoc-idle-delay 0)
-  (setq eldoc-print-after-edit t))
+  (setq eldoc-idle-delay 0.5)
+  (setq eldoc-print-after-edit nil)
 
-(use-package! eldoc-box
-  :config
-  (eldoc-box-hover-mode +1))
+  (eldoc-add-command-completions "company-"))
 
-;; (use-package! web-mode
-;;   :mode "\\.astro\\'"
-;;   ;; :custom
-;;   ;; (web-mode-markup-indent-offset 2)
-;;   ;; (web-mode-css-indent-offset 2)
-;;   ;; (web-mode-code-indent-offset 2)
-;;   ;; :hook (web-mode . lsp-deferred)
-;;   :init
-;;   (setq-default web-mode-comment-formats '(("java"       . "/*")
-;;                                            ("javascript" . "//")
-;;                                            ("typescript" . "//")
-;;                                            ("astro" . "//")
-;;                                            ("typescript" . "//")
-;;                                            ("php"        . "/*")
-;;                                            ("css"        . "/*")))
-
-;;   :config
-;;   (setq web-mode-enable-front-matter-block t)
-;;   (setq web-mode-comment-style 1)
-;;   (setq web-mode-enable-comment-annotation t)
-;;   (setq web-mode-enable-comment-interpolation t)
-;;   (setq web-mode-enable-inlays t)
-;;   (setq web-mode-enable-current-element-highlight t)
-;;   (setq web-mode-code-indent-offset 2
-;;         web-mode-css-indent-offset  2
-;;         web-mode-markup-indent-offset 2
-;;         )
-
-;;   ;; (define-derived-mode astro-mode web-mode "astro")
-;;   ;; (setq auto-mode-alist
-;;   ;;       (append '((".*\\.astro\\'" . astro-mode))
-;;   ;;               auto-mode-alist))
-
-;;   (custom-set-faces
-;;    '(web-mode-doctype-face
-;;      ((t :inherit font-lock-doc-face)))
-;;    '(web-mode-html-tag-face
-;;      ((t :inherit font-lock-function-name-face)))
-;;    '(web-mode-html-attr-name-face
-;;      ((t :inherit font-lock-variable-name-face)))
-;;    '(web-mode-html-attr-value-face
-;;      ((t :inherit font-lock-string-face)))
-;;    '(web-mode-comment-face
-;;      ((t :inherit font-lock-comment-face)))
-;;    '(web-mode-server-comment-face
-;;      ((t :inherit font-lock-comment-face)))
-;;    '(web-mode-javascript-comment-face
-;;      ((t :inherit font-lock-comment-face)))
-;;    '(web-mode-json-comment-face
-;;      ((t :inherit font-lock-comment-face)))
-;;    '(web-mode-error-face
-;;      ((t :inherit font-lock-warning-face)))
-;;    '(web-mode-current-element-highlight-face
-;;      ((t :inherit font-lock-builtin-face)))
-;;    '(web-mode-html-tag-bracket-face
-;;      ((t :inherit font-lock-negation-char-face)))
-;;    '(web-mode-block-delimiter-face
-;;      ((t :inherit font-lock-negation-char-face)))
-;;    '(web-mode-javascript-string-face
-;;      ((t :inherit font-lock-string-face)))
-;;    '(web-mode-json-key-face
-;;      ((t :inherit font-lock-keyword-face)))
-;;    '(web-mode-json-string-face
-;;      ((t :inherit font-lock-string-face)))
-;;    '(web-mode-keyword-face
-;;      ((t :inherit font-lock-keyword-face)))
-;;    '(web-mode-param-name-face
-;;      ((t :inherit font-lock-variable-name-face)))
-;;    '(web-mode-preprocessor-face
-;;      ((t :inherit font-lock-preprocessor-face)))
-;;    '(web-mode-string-face
-;;      ((t :inherit font-lock-string-face)))
-;;    '(web-mode-type-face
-;;      ((t :inherit font-lock-type-face)))
-;;    '(web-mode-variable-name-face
-;;      ((t :inherit font-lock-variable-name-face)))
-;;    '(web-mode-function-call-face
-;;      ((t :inherit font-lock-function-name-face)))
-;;    '(web-mode-function-name-face
-;;      ((t :inherit font-lock-function-name-face)))
-;;    '(web-mode-warning-face
-;;      ((t :inherit font-lock-warning-face)))
-;;    '(web-mode-css-color-face
-;;      ((t :inherit font-lock-reference-face)))
-;;    '(web-mode-css-rule-face
-;;      ((t :inherit font-lock-function-name-face)))
-;;    '(web-mode-css-pseudo-class-face
-;;      ((t :inherit font-lock-function-name-face)))
-;;    '(web-mode-css-at-rule-face
-;;      ((t :inherit font-lock-keyword-face))))
-;;   )
-
-(use-package markdown-mode
-  :mode (("README\\.md$" . gfm-mode)
-         ("\\.md$" . markdown-mode)
-         ("\\.mdx$" . markdown-mode)
-         ("\\.astro$" . astro-mode)
-         ("\\.markdown$" . markdown-mode))
-  :bind
-  (:repeat-map markdown-outline-repeat
-               ("p" . markdown-outline-previous)
-               ("n" . markdown-outline-next))
+(use-package! web-mode
   :init
-  (define-derived-mode astro-mode markdown-mode
-    "Astro")
+  (define-derived-mode astro-mode web-mode "Astro")
+  ;; (setq auto-mode-alist
+  ;;       (append '((".*\\.astro\\'" . astro-mode))
+  ;;               auto-mode-alist))
+  :mode
+  (;; "\\.astro\\'"
+   ("\\.astro$" . astro-mode))
   :hook
-  (markdown-mode . turn-off-auto-fill))
+  (astro-mode . lsp)
+  :custom
+  ((web-mode-comment-style 2)
+   (web-mode-comment-prefixing nil)
+   (web-mode-enable-comment-annotation t)
+   (web-mode-enable-comment-interpolation t)
+   (web-mode-enable-engine-detection t)
+   (web-mode-comments-invisible t)
+   ))
+
+;; (use-package markdown-mode
+;;   :mode (("README\\.md$" . gfm-mode)
+;;          ("\\.md$" . markdown-mode)
+;;          ("\\.mdx$" . markdown-mode)
+;;          ("\\.astro$" . astro-mode)
+;;          ("\\.markdown$" . markdown-mode))
+;;   :bind
+;;   (:repeat-map markdown-outline-repeat
+;;                ("p" . markdown-outline-previous)
+;;                ("n" . markdown-outline-next))
+;;   :init
+;;   (define-derived-mode astro-mode markdown-mode "Astro")
+;;   :hook
+;;   (astro-mode . lsp)
+;;   (markdown-mode . turn-off-auto-fill))
 
 ;; (use-package! tree-sitter
 ;;   :init
@@ -332,86 +259,98 @@
 ;;   (vue-mode . my-font-lock)
 ;; )
 
-(use-package! tree-sitter
-  :hook (tree-sitter-mode . tree-sitter-debug-mode))
+;; https://merrick.luois.me/posts/better-tsx-support-in-doom-emacs
+;; (use-package! tree-sitter
+;;   :init
+;;   (add-to-list 'load-path "/Users/mnml/.config/emacs/.local/straight/repos/elisp-tree-sitter/lisp")
+;;   (add-to-list 'load-path "/Users/mnml/.config/emacs/.local/straight/repos/elisp-tree-sitter/langs")
 
-(use-package! tree-sitter-langs
-  :after tree-sitter
-  :init
-  (defun tree-sitter-langs--init-major-mode-alist (&rest _args)
-    "Link known major modes to languages provided by the bundle."
-    (dolist
-        (entry (reverse
-                '((astro-mode . astro)
-                  (agda2-mode      . agda)
-                  (sh-mode         . bash)
-                  (c-mode          . c)
-                  (caml-mode       . ocaml)
-                  (clojure-mode    . clojure)
-                  (csharp-mode     . c-sharp)
-                  (c++-mode        . cpp)
-                  (d-mode          . d)
-                  (css-mode        . css)
-                  (elm-mode        . elm)
-                  (elixir-mode     . elixir)
-                  (erlang-mode     . erlang)
-                  (ess-r-mode      . r)
-                  (fennel-mode     . fennel)
-                  (go-mode         . go)
-                  (haskell-mode    . haskell)
-                  (hcl-mode        . hcl)
-                  (terraform-mode  . hcl)
-                  (html-mode       . html)
-                  (markdown-mode   . markdown)
-                  (mhtml-mode      . html)
-                  (nix-mode        . nix)
-                  (java-mode       . java)
-                  (javascript-mode . javascript)
-                  (js-mode         . javascript)
-                  (js2-mode        . javascript)
-                  (js3-mode        . javascript)
-                  (json-mode       . json)
-                  (jsonc-mode      . json)
-                  (julia-mode      . julia)
-                  (lua-mode        . lua)
-                  (ocaml-mode      . ocaml)
-                  (perl-mode       . perl)
-                  (php-mode        . php)
-                  (prisma-mode     . prisma)
-                  (python-mode     . python)
-                  (pygn-mode       . pgn)
-                  (rjsx-mode       . javascript)
-                  (ruby-mode       . ruby)
-                  (rust-mode       . rust)
-                  (rustic-mode     . rust)
-                  (scala-mode      . scala)
-                  (swift-mode      . swift)
-                  (toml-mode       . toml)
-                  (tuareg-mode     . ocaml)
-                  (typescript-mode . typescript)
-                  (verilog-mode    . verilog)
-                  (yaml-mode       . yaml)
-                  (zig-mode        . zig))))
-      (cl-pushnew entry tree-sitter-major-mode-language-alist
-                  :key #'car))
-    (advice-remove 'tree-sitter--setup #'tree-sitter-langs--init-major-mode-alist))
+;;   :when (bound-and-true-p module-file-suffix)
+;;   :hook (prog-mode . tree-sitter-mode)
+;;   :hook (tree-sitter-after-on . tree-sitter-hl-mode)
+;;   :config
+;;   (require 'tree-sitter-langs)
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+;;   (defadvice! doom-tree-sitter-fail-gracefully-a (orig-fn &rest args)
+;;     "Don't break with errors when current major mode lacks tree-sitter support."
+;;     :around #'tree-sitter-mode
+;;     (condition-case e
+;;         (apply orig-fn args)
+;;       (error
+;;        (unless (string-match-p (concat "^Cannot find shared library\\|"
+;;                                        "^No language registered\\|"
+;;                                        "cannot open shared object file")
+;;                                (error-message-string e))
+;;          (signal (car e) (cadr e)))))))
+
+(use-package! typescript-mode
+  :mode ("\\.tsx\\'" . typescript-tsx-tree-sitter-mode)
   :config
-  (add-function :before-while tree-sitter-hl-face-mapping-function
-                (lambda (capture-name)
-                  (or (string= capture-name "comment") (string= capture-name "string") (string= capture-name "doc"))))
+  (setq typescript-indent-level 2)
 
-  (add-to-list 'tree-sitter-major-mode-language-alist '(tsx-mode . typescript))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(jsonian-mode . json))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(astro-mode . astro))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(yaml-mode . yaml))
-  )
+  (define-derived-mode typescript-tsx-tree-sitter-mode typescript-mode "TypeScript TSX"
+    (setq-local indent-line-function 'rjsx-indent-line))
+  (add-hook! 'typescript-tsx-tree-sitter-mode-local-vars-hook
+             #'+javascript-init-lsp-or-tide-maybe-h
+             #'rjsx-minor-mode)
+  (map! :map typescript-tsx-tree-sitter-mode-map
+        "<" 'rjsx-electric-lt
+        ">" 'rjsx-electric-gt)
 
-(use-package! eglot
-  ;; :after (web-mode)
-  :config
-  (add-hook! astro-mode-hook #'eglot-ensure)
-  (add-to-list 'eglot-server-programs '(astro-mode "astro-ls" "--stdio"))
-  )
+  (defun typescript-tsx-tree-sitter-indent-line ()
+    (if-let* ((col (typescript-tsx-tree-sitter--proper-indentation))
+              (offset (- (current-column) (current-indentation))))
+        (progn
+          (indent-line-to col)
+          (move-to-column (+ offset col)))
+      (typescript-indent-line)))
+
+  (defun typescript-tsx-tree-sitter--in-tsx (node-type parent-type)
+    (--some? (s-starts-with? "jsx" it)
+             (--map (format "%s" it) (list node-type parent-type))))
+
+  (defun typescript-tsx-tree-sitter--proper-indentation ()
+    (save-excursion
+      (back-to-indentation)
+      (-let* ((node (tree-sitter-node-at-point))
+              (parent (tsc-get-parent node))
+              (node-type (tsc-node-type node))
+              (parent-type (tsc-node-type parent)))
+        ;; only handles jsx related indention
+        (when (typescript-tsx-tree-sitter--in-tsx node-type parent-type)
+          ;; (message "current: %s" node-type)
+          ;; (message "parent: %s" parent-type)
+          (cond
+           ((and (member node-type '("{" "}"))
+                 (eq 'jsx_expression parent-type))
+            (+ (cdr (tsc-node-start-point (tsc-get-parent parent))) typescript-indent-level))
+           ((eq 'jsx_expression parent-type)
+            nil)
+           ((eq 'jsx_attribute parent-type)
+            (+ (cdr (tsc-node-start-point (tsc-get-parent parent))) typescript-indent-level))
+           ((eq 'jsx_expression node-type)
+            (+ typescript-indent-level (cdr (tsc-node-start-point node))))
+           ((member node-type '(">" "/"))
+            (cdr (tsc-node-start-point parent)))
+           ((eq 'jsx_closing_element parent-type)
+            (cdr (tsc-node-start-point (tsc-get-parent parent))))
+           ((eq 'jsx_self_closing_element parent-type)
+            nil)
+           ((eq 'jsx_self_closing_element node-type)
+            (+ (cdr (tsc-node-start-point node)) typescript-indent-level))
+           (t
+            (+ (cdr (tsc-node-start-point parent)) typescript-indent-level))))))))
+
+(after! tree-sitter
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-tree-sitter-mode . tsx)))
+
+;; (use-package! eglot
+;;   ;; :after (markdown-mode)
+;;   :config
+;;   (add-hook 'astro-mode-hook #'eglot-ensure)
+;;   (add-to-list 'eglot-server-programs '(astro-mode "astro-ls" "--stdio"))
+;;   )
 
 (use-package! flycheck-eglot)
 
@@ -422,13 +361,25 @@
        (setq magit-git-output-coding-system 'utf-8-hfs)))
 
 ;; (use-package! apheleia
+;;   ;; :custom
+;;   ;; ((apheleia-log-only-errors nil))
 ;;   :config
-;;   ;; (add-hook! before-save-hook (lambda () (apheleia-format-buffer (apheleia--get-formatters)))
+;;   (push '(prettier-astro
+;;           . (npx "prettier"
+;;                  ;; "--stdin-filepath"
+;;                  filepath
+;;                  "--parser astro"
+;;                  (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+;;         apheleia-formatters)
+
+;;   (add-hook 'before-save-hook (lambda () (apheleia-format-buffer (apheleia--get-formatters))))
 ;;   (apheleia-global-mode +1))
 
 (use-package! denote
   ;; :custom
   ;; (denote-directory "~/org/pages")
+  ;; :config
+  ;; (defalias 'denote 'denote-open-or-create)
   )
 
 (use-package! treemacs
@@ -534,3 +485,35 @@
         (rename-file old-file new-file)
         (set-visited-file-name new-file)
         (set-buffer-modified-p nil)))))
+
+;; (use-package! lsp-bridge
+;;   :config
+;;   (global-lsp-bridge-mode))
+
+(use-package! poly-markdown)
+
+(use-package! lsp-tailwindcss
+  :custom
+  (lsp-tailwindcss-add-on-mode t)
+  :config
+  (add-to-list 'lsp-tailwindcss-major-modes 'astro-mode))
+
+(use-package! css-eldoc
+  :config
+  (css-eldoc-enable))
+(use-package! eldoc-box
+  :config
+  (eldoc-box-hover-mode)
+  (eldoc-box-hover-at-point-mode)
+  ;; (eldoc-box-help-at-point)
+  )
+(use-package! eldoc-eval
+  :config
+  (eldoc-in-minibuffer-mode 1))
+(use-package! eldoc-overlay
+  :config
+  (eldoc-overlay-mode -1))
+
+(use-package! lsp-mode
+  :config
+  (setq lsp-eldoc-render-all t))

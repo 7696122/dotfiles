@@ -79,23 +79,21 @@
 
 (package! poly-markdown)
 
-(package! eldoc-box)
-
 (package! treesit-auto)
 
 (package! eglot :recipe (:host github :repo "joaotavora/eglot"))
 
 (package! flycheck-eglot)
 
-(package! lsp-bridge
-  :recipe (:host github :repo "manateelazycat/lsp-bridge"
-           :files ("*.el" "*.py" "acm" "core" "langserver"
-                   "multiserver" "resources")))
+;; (package! lsp-bridge
+;;   :recipe (:host github :repo "manateelazycat/lsp-bridge"
+;;            :files ("*.el" "*.py" "acm" "core" "langserver"
+;;                    "multiserver" "resources")))
 
 (package! web-mode :recipe (:host github :repo "fxbois/web-mode"))
 (package! mmm-mode :recipe (:host github :repo "dgutov/mmm-mode"))
 
-(package! apheleia)
+;; (package! apheleia :recipe (:host github :repo "radian-software/apheleia"))
 
 (package! denote
   :recipe (:host github
@@ -109,17 +107,27 @@
   :recipe (:repo "https://gitlab.com/xgqt/emacs-websearch/"
            :files ("*.el" "extras/*")))
 
-(package! tree-sitter
-  :recipe (:host github
-           :branch "master"
-           :repo
-           "emacs-tree-sitter/elisp-tree-sitter"
-           ;; "tree-sitter/tree-sitter"
-           ))
+;; (package! tree-sitter
+;;   :ignore (null (bound-and-true-p module-file-suffix))
+;;   :recipe (:host github
+;;            :branch "master"
+;;            :repo
+;;            "emacs-tree-sitter/elisp-tree-sitter"
+;;            ;; "tree-sitter/tree-sitter"
+;;            ))
 
-(package! tree-sitter-langs
-  :recipe (:host github
-           :branch "master"
-           :repo
-           ;; "emacs-tree-sitter/tree-sitter-langs"
-           "7696122/tree-sitter-langs"))
+;; (package! tree-sitter-langs
+;;   :ignore (null (bound-and-true-p module-file-suffix))
+;;   :recipe (:host github
+;;            :branch "master"
+;;            :repo
+;;            ;; "emacs-tree-sitter/tree-sitter-langs"
+;;            "7696122/tree-sitter-langs"))
+
+(package! lsp-tailwindcss
+  :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+
+(package! css-eldoc)
+(package! eldoc-box)
+(package! eldoc-eval)
+(package! eldoc-overlay)
