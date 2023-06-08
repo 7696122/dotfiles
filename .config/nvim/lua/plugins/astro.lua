@@ -17,7 +17,7 @@ return {
     opts = {
       ensure_installed = {
         "astro",
-        "typescript",
+        -- "typescript",
       },
     },
   },

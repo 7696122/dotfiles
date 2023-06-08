@@ -100,7 +100,7 @@
        ;;gist              ; interacting with github gists
        lookup              ; navigate your code and its documentation
        (lsp               ; M-x vscode
-        ;;+eglot
+        ;; +eglot
         +peek
         )
        magit             ; a git porcelain for Emacs

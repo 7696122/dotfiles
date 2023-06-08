@@ -81,7 +81,7 @@
 
 (package! treesit-auto)
 
-(package! eglot :recipe (:host github :repo "joaotavora/eglot"))
+;; (package! eglot :recipe (:host github :repo "joaotavora/eglot"))
 
 (package! flycheck-eglot)
 
@@ -131,3 +131,7 @@
 (package! eldoc-box)
 (package! eldoc-eval)
 (package! eldoc-overlay)
+
+(package! httpcode)
+
+(package! org-jira)

@@ -186,13 +186,29 @@
   (term-cursor-mode +1))
 
 (use-package! eldoc
+  :preface
+  (defun mp-eglot-eldoc ()
+    (setq eldoc-documentation-strategy
+          'eldoc-documentation-compose-eagerly))
+  :hook
+  ((eglot-managed-mode . mp-eglot-eldoc))
   :config
   (setq eldoc-idle-delay 0.5)
   (setq eldoc-print-after-edit nil)
 
   (eldoc-add-command-completions "company-"))
 
+;; (use-package! eglot
+;;   ;; :after (markdown-mode)
+;;   :config
+;;   (add-hook 'astro-mode-hook #'eglot-ensure)
+;;   (add-to-list 'eglot-server-programs '(astro-mode "astro-ls" "--stdio")))
+
 (use-package! web-mode
+  :after
+  (lsp-mode)
+  :hook
+  (astro-mode . lsp-deferred)
   :init
   (define-derived-mode astro-mode web-mode "Astro")
   ;; (setq auto-mode-alist
@@ -201,8 +217,6 @@
   :mode
   (;; "\\.astro\\'"
    ("\\.astro$" . astro-mode))
-  :hook
-  (astro-mode . lsp)
   :custom
   ((web-mode-comment-style 2)
    (web-mode-comment-prefixing nil)
@@ -345,13 +359,6 @@
 (after! tree-sitter
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-tree-sitter-mode . tsx)))
 
-;; (use-package! eglot
-;;   ;; :after (markdown-mode)
-;;   :config
-;;   (add-hook 'astro-mode-hook #'eglot-ensure)
-;;   (add-to-list 'eglot-server-programs '(astro-mode "astro-ls" "--stdio"))
-;;   )
-
 (use-package! flycheck-eglot)
 
 (use-package! magit
@@ -376,9 +383,11 @@
 ;;   (apheleia-global-mode +1))
 
 (use-package! denote
-  ;; :custom
-  ;; (denote-directory "~/org/pages")
-  ;; :config
+  :config
+  (setq denote-modules-global-mode t)
+  (setq denote-modules '(project xref ffap))
+  (setq denote-prompts '(title keywords date file-type subdirectory template signature))
+
   ;; (defalias 'denote 'denote-open-or-create)
   )
 
@@ -492,12 +501,6 @@
 
 (use-package! poly-markdown)
 
-(use-package! lsp-tailwindcss
-  :custom
-  (lsp-tailwindcss-add-on-mode t)
-  :config
-  (add-to-list 'lsp-tailwindcss-major-modes 'astro-mode))
-
 (use-package! css-eldoc
   :config
   (css-eldoc-enable))
@@ -515,5 +518,36 @@
   (eldoc-overlay-mode -1))
 
 (use-package! lsp-mode
+  :commands
+  (lsp lsp-deferred)
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
   :config
+  (require 'lsp-astro)
   (setq lsp-eldoc-render-all t))
+
+(use-package! lsp-tailwindcss
+  :custom
+  (lsp-tailwindcss-add-on-mode t)
+  :config
+  (add-to-list 'lsp-tailwindcss-major-modes 'astro-mode))
+
+;; (use-package! lsp-ui-doc
+;;   :custom
+;;   (lsp-ui-doc-alignment 'window)
+;;   (lsp-ui-doc-show-with-mouse nil)
+;;   (lsp-ui-doc-show-with-cursor t))
+
+(add-to-list 'load-path "~/.config/doom/")
+(require 'org-notion-meetings-export)
+
+(use-package! httpcode
+  :config
+  (defalias 'httpcode 'hc))
+
+(use-package! org-jira
+  :config
+  (setq org-jira-working-dir (expand-file-name "jira" org-directory))
+  (unless (f-exists? org-jira-working-dir)
+     (make-directory org-jira-working-dir))
+  (setq jiralib-url "https://jira.lfcorp.com"))
