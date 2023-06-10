@@ -62,8 +62,8 @@
 ;; (package! corfu-mouse :recipe (:repo "https://codeberg.org/akib/emacs-corfu-mouse.git"))
 
 ;; (package! company-box :recipe (:host github :repo "sebastiencs/company-box"))
-(package! company-quickhelp)
-(package! company-quickhelp-terminal)
+;; (package! company-quickhelp)
+;; (package! company-quickhelp-terminal)
 
 (package! md-roam :recipe (:host github :repo "nobiot/md-roam"))
 
@@ -135,3 +135,26 @@
 (package! httpcode)
 
 (package! org-jira)
+
+(package! sideline)
+(package! sideline-flycheck)
+(package! sideline-lsp)
+(package! sideline-eldoc :recipe (:repo "git@github.com:ginqi7/sideline-eldoc.git"))
+(package! sideline-color :recipe (:host github :repo "emacs-sideline/sideline-color"))
+(package! sideline-blame :recipe (:host github :repo "emacs-sideline/sideline-blame"))
+
+(package! zetteldesk
+  :recipe
+  (:host github :repo "Vidianos-Giannitsis/zetteldesk.el"
+         ;; :files ("*.el")
+         ))
+(package! zetteldesk-kb)
+(package! zetteldesk-ref)
+(package! zetteldesk-info)
+(package! zetteldesk-remark)
+
+(package! inline-docs)
+
+(package! eask :recipe (:host github :repo "emacs-eask/eask"))
+(package! eask-mode :recipe (:host github :repo "emacs-eask/eask-mode"))
+(package! feature-mode)

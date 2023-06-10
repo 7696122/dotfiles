@@ -113,13 +113,13 @@
   (setq company-insertion-on-trigger nil)
   )
 
-(use-package! company-quickhelp
-  :hook (company-mode . company-quickhelp-mode)
-  :config
-  (company-quickhelp-mode +1))
+;; (use-package! company-quickhelp
+;;   :hook (company-mode . company-quickhelp-mode)
+;;   :config
+;;   (company-quickhelp-mode +1))
 
-(use-package! company-quickhelp-terminal
-  :hook (company-quickhelp-mode . company-quickhelp-terminal-mode))
+;; (use-package! company-quickhelp-terminal
+;;   :hook (company-quickhelp-mode . company-quickhelp-terminal-mode))
 
 (use-package! md-roam
   :config
@@ -198,49 +198,63 @@
 
   (eldoc-add-command-completions "company-"))
 
-;; (use-package! eglot
-;;   ;; :after (markdown-mode)
-;;   :config
-;;   (add-hook 'astro-mode-hook #'eglot-ensure)
-;;   (add-to-list 'eglot-server-programs '(astro-mode "astro-ls" "--stdio")))
 
-(use-package! web-mode
-  :after
-  (lsp-mode)
+(define-derived-mode typescript-react-mode web-mode "TypescriptReact" "A major mode for tsx.")
+(define-derived-mode typescript-astro-mode web-mode "TypescriptAstro" "A major mode for astro.")
+
+(use-package typescript-mode
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-react-mode)
+         ("\\.astro\\'" . typescript-astro-mode)
+         ))
+
+(use-package eglot
   :hook
-  (astro-mode . lsp-deferred)
-  :init
-  (define-derived-mode astro-mode web-mode "Astro")
-  ;; (setq auto-mode-alist
-  ;;       (append '((".*\\.astro\\'" . astro-mode))
-  ;;               auto-mode-alist))
-  :mode
-  (;; "\\.astro\\'"
-   ("\\.astro$" . astro-mode))
-  :custom
-  ((web-mode-comment-style 2)
-   (web-mode-comment-prefixing nil)
-   (web-mode-enable-comment-annotation t)
-   (web-mode-enable-comment-interpolation t)
-   (web-mode-enable-engine-detection t)
-   (web-mode-comments-invisible t)
-   ))
+  ((js-mode
+    typescript-mode
+    typescript-react-mode
+    typescript-astro-mode
+    ) . eglot-ensure)
+  :config
+  (cl-pushnew `((typescript-astro-mode) . ("astro-ls" "--stdio"))
+              eglot-server-programs
+              :test #'equal)
+  (cl-pushnew `((js-mode
+                 typescript-mode
+                 typescript-react-mode
+                 typescript-astro-mode
+                 ) . ,(eglot-alternatives
+                 '(
+                   ("typescript-language-server" "--stdio")
+                   ("vtsls" "--stdio")
+                   ("astro-ls" "--stdio")
+                   )))
+              eglot-server-programs
+              :test #'equal))
 
-;; (use-package markdown-mode
-;;   :mode (("README\\.md$" . gfm-mode)
-;;          ("\\.md$" . markdown-mode)
-;;          ("\\.mdx$" . markdown-mode)
-;;          ("\\.astro$" . astro-mode)
-;;          ("\\.markdown$" . markdown-mode))
-;;   :bind
-;;   (:repeat-map markdown-outline-repeat
-;;                ("p" . markdown-outline-previous)
-;;                ("n" . markdown-outline-next))
-;;   :init
-;;   (define-derived-mode astro-mode markdown-mode "Astro")
-;;   :hook
-;;   (astro-mode . lsp)
-;;   (markdown-mode . turn-off-auto-fill))
+(use-package web-mode
+  :config
+  (setq web-mode-content-types-alist
+        '(("jsx" . "\\.js[x]?\\'"))))
+
+(use-package markdown-mode
+  :mode (("README\\.md$" . gfm-mode)
+         ("\\.md$" . markdown-mode)
+         ("\\.mdx$" . markdown-mode)
+         ("\\.markdown$" . markdown-mode))
+  :bind
+  (:repeat-map markdown-outline-repeat
+               ("p" . markdown-outline-previous)
+               ("n" . markdown-outline-next))
+  ;; :init
+  ;; (define-derived-mode astro-mode markdown-mode "Astro")
+  ;; :hook
+  ;; (astro-mode . lsp)
+  ;; (markdown-mode . lsp)
+  ;; (markdown-mode . turn-off-auto-fill)
+  ;; :config
+  ;; (require 'lsp-marksman)
+  )
 
 ;; (use-package! tree-sitter
 ;;   :init
@@ -297,67 +311,6 @@
 ;;                                        "cannot open shared object file")
 ;;                                (error-message-string e))
 ;;          (signal (car e) (cadr e)))))))
-
-(use-package! typescript-mode
-  :mode ("\\.tsx\\'" . typescript-tsx-tree-sitter-mode)
-  :config
-  (setq typescript-indent-level 2)
-
-  (define-derived-mode typescript-tsx-tree-sitter-mode typescript-mode "TypeScript TSX"
-    (setq-local indent-line-function 'rjsx-indent-line))
-  (add-hook! 'typescript-tsx-tree-sitter-mode-local-vars-hook
-             #'+javascript-init-lsp-or-tide-maybe-h
-             #'rjsx-minor-mode)
-  (map! :map typescript-tsx-tree-sitter-mode-map
-        "<" 'rjsx-electric-lt
-        ">" 'rjsx-electric-gt)
-
-  (defun typescript-tsx-tree-sitter-indent-line ()
-    (if-let* ((col (typescript-tsx-tree-sitter--proper-indentation))
-              (offset (- (current-column) (current-indentation))))
-        (progn
-          (indent-line-to col)
-          (move-to-column (+ offset col)))
-      (typescript-indent-line)))
-
-  (defun typescript-tsx-tree-sitter--in-tsx (node-type parent-type)
-    (--some? (s-starts-with? "jsx" it)
-             (--map (format "%s" it) (list node-type parent-type))))
-
-  (defun typescript-tsx-tree-sitter--proper-indentation ()
-    (save-excursion
-      (back-to-indentation)
-      (-let* ((node (tree-sitter-node-at-point))
-              (parent (tsc-get-parent node))
-              (node-type (tsc-node-type node))
-              (parent-type (tsc-node-type parent)))
-        ;; only handles jsx related indention
-        (when (typescript-tsx-tree-sitter--in-tsx node-type parent-type)
-          ;; (message "current: %s" node-type)
-          ;; (message "parent: %s" parent-type)
-          (cond
-           ((and (member node-type '("{" "}"))
-                 (eq 'jsx_expression parent-type))
-            (+ (cdr (tsc-node-start-point (tsc-get-parent parent))) typescript-indent-level))
-           ((eq 'jsx_expression parent-type)
-            nil)
-           ((eq 'jsx_attribute parent-type)
-            (+ (cdr (tsc-node-start-point (tsc-get-parent parent))) typescript-indent-level))
-           ((eq 'jsx_expression node-type)
-            (+ typescript-indent-level (cdr (tsc-node-start-point node))))
-           ((member node-type '(">" "/"))
-            (cdr (tsc-node-start-point parent)))
-           ((eq 'jsx_closing_element parent-type)
-            (cdr (tsc-node-start-point (tsc-get-parent parent))))
-           ((eq 'jsx_self_closing_element parent-type)
-            nil)
-           ((eq 'jsx_self_closing_element node-type)
-            (+ (cdr (tsc-node-start-point node)) typescript-indent-level))
-           (t
-            (+ (cdr (tsc-node-start-point parent)) typescript-indent-level))))))))
-
-(after! tree-sitter
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-tsx-tree-sitter-mode . tsx)))
 
 (use-package! flycheck-eglot)
 
@@ -504,6 +457,7 @@
 (use-package! css-eldoc
   :config
   (css-eldoc-enable))
+
 (use-package! eldoc-box
   :config
   (eldoc-box-hover-mode)
@@ -513,30 +467,94 @@
 (use-package! eldoc-eval
   :config
   (eldoc-in-minibuffer-mode 1))
+
+(use-package! inline-docs)
+
 (use-package! eldoc-overlay
+  :custom
+  (eldoc-overlay-enable-in-minibuffer t)
+  (eldoc-overlay-backend 'inline-docs)
   :config
   (eldoc-overlay-mode -1))
 
-(use-package! lsp-mode
-  :commands
-  (lsp lsp-deferred)
+(use-package! sideline
   :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  :config
-  (require 'lsp-astro)
-  (setq lsp-eldoc-render-all t))
+  ((lsp-mode      . sideline-mode)
+   (flycheck-mode . sideline-mode)   ; for `sideline-flycheck`
+   (flymake-mode  . sideline-mode)   ; for `sideline-flymake`
+   (after-init    . sideline-mode))
+  :init
+  (setq
+   sideline-delay 0.5
+   sideline-backends-skip-current-line t  ; don't display on current line
+   ;; sideline-order-left 'down              ; or 'up
+   ;; sideline-order-right 'up               ; or 'down
+   ;; sideline-format-left "%s   "           ; format for left aligment
+   ;; sideline-format-right "   %s"          ; format for right aligment
+   sideline-priority 100                  ; overlays' priority
+   sideline-display-backend-name t        ; display the backend name
 
-(use-package! lsp-tailwindcss
+   ;; sideline-backends-left '()
+   sideline-backends-right
+   '(
+     ;; sideline-eldoc
+     sideline-lsp
+     sideline-flycheck
+     sideline-blame
+     sideline-color
+     )))
+
+(use-package! sideline-lsp
   :custom
-  (lsp-tailwindcss-add-on-mode t)
-  :config
-  (add-to-list 'lsp-tailwindcss-major-modes 'astro-mode))
+  (sideline-lsp-update-mode 'line))
+
+(use-package! sideline-eldoc
+  :custom
+  (sideline-eldoc-hide-minibuffer nil))
+
+(use-package! sideline-flycheck
+  :hook
+  (flycheck-mode . sideline-flycheck-setup))
+
+;; (use-package! lsp-mode
+;;   :commands
+;;   (lsp lsp-deferred)
+;;   :hook
+;;   ((lsp-mode . lsp-enable-which-key-integration)
+;;    (lsp-mode . sideline-mode))
+;;   :config
+;;   (setq lsp-javascript-suggest-complete-function-calls t)
+;;   (lsp-register-custom-settings
+;;    '(("completions.completeFunctionCalls" t t)))
+
+;;   (require 'lsp-astro)
+;;   (setq lsp-eldoc-render-all t)
+;;   ;; (setq lsp-ui-sideline-show-code-actions t)
+;;   (setq lsp-enable-text-document-color t)
+;;   (setq lsp-enable-snippet t))
+
+;; (use-package! lsp-ui
+;;   :init
+;;   ;; disable original sideline
+;;   (setq lsp-ui-sideline-enable t))
+
+;; (use-package! lsp-ui-sideline
+;;   ;; :custom
+;;   ;; (lsp-ui-sideline-update-mode 'line)
+;;   ;; (lsp-ui-sideline-show-hover t)
+;;   )
+
+;; (use-package! lsp-tailwindcss
+;;   :custom
+;;   (lsp-tailwindcss-add-on-mode t)
+;;   :config
+;;   (add-to-list 'lsp-tailwindcss-major-modes 'astro-mode))
 
 ;; (use-package! lsp-ui-doc
 ;;   :custom
-;;   (lsp-ui-doc-alignment 'window)
-;;   (lsp-ui-doc-show-with-mouse nil)
-;;   (lsp-ui-doc-show-with-cursor t))
+;;   ;; (lsp-ui-doc-alignment 'window)
+;;   (lsp-ui-doc-show-with-mouse t)
+;;   (lsp-ui-doc-show-with-cursor nil))
 
 (add-to-list 'load-path "~/.config/doom/")
 (require 'org-notion-meetings-export)
@@ -551,3 +569,13 @@
   (unless (f-exists? org-jira-working-dir)
      (make-directory org-jira-working-dir))
   (setq jiralib-url "https://jira.lfcorp.com"))
+
+(use-package! mmm-mode)
+
+(use-package! zetteldesk
+  :config
+  (zetteldesk-mode 1))
+
+(use-package! zetteldesk-kb
+  :config
+  (setq zetteldesk-kb-hydra-prefix (kbd "C-c z")))

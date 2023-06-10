@@ -90,7 +90,7 @@
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        (debugger          ; FIXME stepping through code, to help you add bugs
-        ;; +lsp
+        +lsp
         )
        ;;direnv
        ;;docker
@@ -98,9 +98,13 @@
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
-       lookup              ; navigate your code and its documentation
+       (lookup              ; navigate your code and its documentation
+        +dictionary
+        +docset
+        ;; +offline
+        )
        (lsp               ; M-x vscode
-        ;; +eglot
+        +eglot
         +peek
         )
        magit             ; a git porcelain for Emacs
@@ -150,14 +154,15 @@
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
        (json              ; At least it ain't XML
-        ;; +lsp
+        +lsp
+        +tree-sitter
         )
        (java
         ;; +lsp
         )       ; the poster child for carpal tunnel syndrome
-       (
-        javascript        ; all(hope(abandon(ye(who(enter(here))))))
+       (javascript        ; all(hope(abandon(ye(who(enter(here))))))
         +lsp
+        +tree-sitter
         )
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)

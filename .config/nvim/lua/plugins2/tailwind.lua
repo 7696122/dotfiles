@@ -9,9 +9,17 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    -- dependencies = {
-    --   { "roobert/tailwindcss-colorizer.nvim", config = true },
-    -- },
+    dependencies = {
+      {
+        "roobert/tailwindcss-colorizer-cmp.nvim",
+        -- optionally, override the default options:
+        config = function()
+          require("tailwindcss-colorizer-cmp").setup({
+            color_square_width = 2,
+          })
+        end,
+      },
+    },
     opts = function(_, opts)
       -- color 함께 icon을 보여주게
       local format_kinds = opts.formatting.format
