@@ -2,8 +2,9 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
--- vim.opt.termguicolors = true
--- vim.opt.background = "dark"
+vim.go.background = "light"
+vim.go.termguicolors = true
+
 -- -- vim.cmd("language en_US.utf8")
 --
 -- -- of line (?\xB6), at SPACEs (?\xB7) and at TABs (?\xBB).

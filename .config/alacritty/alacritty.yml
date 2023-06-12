@@ -49,10 +49,10 @@ mouse:
   hide_when_typing: false
 colors:
   primary:
-    # background: "#ffffff"
-    # foreground: "#000000"
-    background: "#000000"
-    foreground: "#ffffff"
+    background: "#ffffff"
+    foreground: "#000000"
+    # background: "#000000"
+    # foreground: "#ffffff"
 key_bindings:
   - { key: A,         mods: Alt,       chars: "\x1ba"                       }
   - { key: B,         mods: Alt,       chars: "\x1bb"                       }

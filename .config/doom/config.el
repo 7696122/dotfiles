@@ -32,7 +32,12 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme
+      nil
+      ;; 'doom-one
+      ;; 'doom-one-light
+      )
+(setq frame-background-mode 'light)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -77,7 +82,7 @@
 
 (normal-erase-is-backspace-mode +1)
 (define-key key-translation-map [?\C-h] [?\C-?])
-(setq +format-with-lsp t)
+(setq +format-with-lsp nil)
 (setq org-roam-directory org-directory)
 
 (setq default-input-method "korean-hangul")
@@ -199,38 +204,67 @@
   (eldoc-add-command-completions "company-"))
 
 
-(define-derived-mode typescript-react-mode web-mode "TypescriptReact" "A major mode for tsx.")
-(define-derived-mode typescript-astro-mode web-mode "TypescriptAstro" "A major mode for astro.")
+(define-derived-mode react-mode web-mode "React" "A major mode for tsx.")
+(define-derived-mode astro-mode web-mode "Astro" "A major mode for astro.")
 
 (use-package typescript-mode
   :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . typescript-react-mode)
-         ("\\.astro\\'" . typescript-astro-mode)
+         ("\\.tsx\\'" . react-mode)
+         ("\\.astro\\'" . astro-mode)
          ))
 
 (use-package eglot
   :hook
   ((js-mode
     typescript-mode
-    typescript-react-mode
-    typescript-astro-mode
+    react-mode
+    astro-mode
     ) . eglot-ensure)
+  :custom
+  (global-flycheck-eglot-mode t)
   :config
-  (cl-pushnew `((typescript-astro-mode) . ("astro-ls" "--stdio"))
+  (cl-pushnew `((astro-mode
+                 ) . ,(eglot-alternatives
+                       '(
+                         ("astro-ls" "--stdio")
+                         ("typescript-language-server" "--stdio")
+                         ("custom-elements-languageserver" "--stdio")
+                         ("vtsls" "--stdio")
+                         )))
               eglot-server-programs
               :test #'equal)
+
   (cl-pushnew `((js-mode
                  typescript-mode
-                 typescript-react-mode
-                 typescript-astro-mode
+                 react-mode
                  ) . ,(eglot-alternatives
-                 '(
-                   ("typescript-language-server" "--stdio")
-                   ("vtsls" "--stdio")
-                   ("astro-ls" "--stdio")
-                   )))
+                       '(
+                         ("typescript-language-server" "--stdio")
+                         ("vtsls" "--stdio")
+                         ("custom-elements-languageserver" "--stdio")
+                         )))
               eglot-server-programs
-              :test #'equal))
+              :test #'equal)
+
+  ;; (setq-default eglot-workspace-configuration
+  ;;               `((:pylsp . (:configurationSources ["flake8"]
+  ;;                            :plugins (
+  ;;                                      :pycodestyle (:enabled :json-false)
+  ;;                                      :mccabe (:enabled :json-false)
+  ;;                                      :pyflakes (:enabled :json-false)
+  ;;                                      :flake8 (:enabled :json-false
+  ;;                                               :maxLineLength 88)
+  ;;                                      :ruff (:enabled t
+  ;;                                             :lineLength 88)
+  ;;                                      :pydocstyle (:enabled t
+  ;;                                                   :convention "numpy")
+  ;;                                      :yapf (:enabled :json-false)
+  ;;                                      :autopep8 (:enabled :json-false)
+  ;;                                      :black (:enabled t
+  ;;                                              :line_length 88
+  ;;                                              :cache_config t))))
+  ;;                 ))
+  )
 
 (use-package web-mode
   :config
@@ -314,8 +348,17 @@
 
 (use-package! flycheck-eglot)
 
+(use-package! vc-git
+  :config
+  (and (eq system-type 'darwin)
+       (use-package! ucs-normalize)
+       (setq vc-git-log-output-coding-system 'utf-8-hfs
+             ;; vc-git-commits-coding-system 'utf-8-hfs
+             )))
+
 (use-package! magit
   :config
+  (setq transient-values '((magit-log:magit-log-mode "-n256" "--graph" "--color" "--decorate")))
   (and (eq system-type 'darwin)
        (use-package! ucs-normalize)
        (setq magit-git-output-coding-system 'utf-8-hfs)))
@@ -500,7 +543,7 @@
      ;; sideline-eldoc
      sideline-lsp
      sideline-flycheck
-     sideline-blame
+     ;; sideline-blame
      sideline-color
      )))
 
@@ -579,3 +622,7 @@
 (use-package! zetteldesk-kb
   :config
   (setq zetteldesk-kb-hydra-prefix (kbd "C-c z")))
+
+(use-package! vterm
+  :custom
+  (vterm-shell "fish"))

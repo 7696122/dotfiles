@@ -45,7 +45,7 @@
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
        ;;tabs              ; a tab bar for Emacs
        (treemacs          ; a project drawer, like neotree but cooler
-        +lsp
+        ;; +lsp
         )
        ;;unicode           ; extended unicode support for various languages
        (vc-gutter +pretty) ; vcs diff in the fringe
@@ -90,7 +90,7 @@
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        (debugger          ; FIXME stepping through code, to help you add bugs
-        +lsp
+        ;; +lsp
         )
        ;;direnv
        ;;docker
@@ -105,7 +105,7 @@
         )
        (lsp               ; M-x vscode
         +eglot
-        +peek
+        ;;+peek
         )
        magit             ; a git porcelain for Emacs
        make              ; run make tasks from Emacs
@@ -158,7 +158,7 @@
         +tree-sitter
         )
        (java
-        ;; +lsp
+        +lsp
         )       ; the poster child for carpal tunnel syndrome
        (javascript        ; all(hope(abandon(ye(who(enter(here))))))
         +lsp
@@ -170,7 +170,7 @@
        ;;lean              ; for folks with too much to prove
        ;;ledger            ; be audit you can be
        (lua               ; one-based indices? one-based indices
-        ;; +lsp
+        +lsp
         )
        (markdown          ; writing docs for people to ignore
         +grip)

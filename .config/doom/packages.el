@@ -82,8 +82,7 @@
 (package! treesit-auto)
 
 ;; (package! eglot :recipe (:host github :repo "joaotavora/eglot"))
-
-(package! flycheck-eglot)
+(package! flycheck-eglot :recipe (:host github :repo "intramurz/flycheck-eglot"))
 
 ;; (package! lsp-bridge
 ;;   :recipe (:host github :repo "manateelazycat/lsp-bridge"
