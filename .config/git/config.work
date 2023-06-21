@@ -1,8 +1,8 @@
 # -*- mode: gitconfig; -*-
-# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/config.work][~/.config/git/config.work:1]]
+# [[file:../../org/dots/dot_git.org::*~/.config/git/config.work][~/.config/git/config.work:1]]
 [core]
     autocrlf = input
 [user]
-    name = "ym.kim"
+    name = "김용문(플랫폼혁신CELL)"
     email = "ym.kim@lfcorp.com"
 # ~/.config/git/config.work:1 ends here

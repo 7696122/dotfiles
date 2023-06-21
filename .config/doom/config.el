@@ -80,9 +80,11 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(setq global-so-long-mode -1)
+
 (normal-erase-is-backspace-mode +1)
 (define-key key-translation-map [?\C-h] [?\C-?])
-(setq +format-with-lsp nil)
+(setq +format-with-lsp t)
 (setq org-roam-directory org-directory)
 
 (setq default-input-method "korean-hangul")
@@ -113,10 +115,10 @@
         completion-category-overrides '((file (styles . (partial-completion))))))
 
 (use-package! company
+  :if (featurep! :completion company)
   :config
-  (setq company-minimum-prefix-length 1)
-  (setq company-insertion-on-trigger nil)
-  )
+  ;; (setq company-minimum-prefix-length 6)
+  (setq company-insertion-on-trigger nil))
 
 ;; (use-package! company-quickhelp
 ;;   :hook (company-mode . company-quickhelp-mode)
@@ -191,82 +193,103 @@
   (term-cursor-mode +1))
 
 (use-package! eldoc
-  :preface
-  (defun mp-eglot-eldoc ()
-    (setq eldoc-documentation-strategy
-          'eldoc-documentation-compose-eagerly))
-  :hook
-  ((eglot-managed-mode . mp-eglot-eldoc))
+  ;; :preface
+  ;; (defun mp-eglot-eldoc ()
+  ;;   (setq eldoc-documentation-strategy
+  ;;         'eldoc-documentation-compose-eagerly))
+  ;; :hook
+  ;; ((eglot-managed-mode . mp-eglot-eldoc))
   :config
-  (setq eldoc-idle-delay 0.5)
+  (setq eldoc-documentation-function
+        (lambda ()
+          (when (eql last-command-event 32)
+            (let (eldoc-documentation-function)
+              (eldoc-print-current-symbol-info)))))
+  (setq eldoc-documentation-strategy
+        ;; 'eldoc-documentation-default
+        ;; 'eldoc-documentation-compose
+        ;; 'eldoc-documentation-compose-eagerly
+        'eldoc-documentation-enthusiast
+        )
+  ;; (setq lsp-ui-doc-delay 0.7
+  ;;       eldoc-idle-delay 0.5)
   (setq eldoc-print-after-edit nil)
 
-  (eldoc-add-command-completions "company-"))
-
-
-(define-derived-mode react-mode web-mode "React" "A major mode for tsx.")
-(define-derived-mode astro-mode web-mode "Astro" "A major mode for astro.")
-
-(use-package typescript-mode
-  :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . react-mode)
-         ("\\.astro\\'" . astro-mode)
-         ))
-
-(use-package eglot
-  :hook
-  ((js-mode
-    typescript-mode
-    react-mode
-    astro-mode
-    ) . eglot-ensure)
-  :custom
-  (global-flycheck-eglot-mode t)
-  :config
-  (cl-pushnew `((astro-mode
-                 ) . ,(eglot-alternatives
-                       '(
-                         ("astro-ls" "--stdio")
-                         ("typescript-language-server" "--stdio")
-                         ("custom-elements-languageserver" "--stdio")
-                         ("vtsls" "--stdio")
-                         )))
-              eglot-server-programs
-              :test #'equal)
-
-  (cl-pushnew `((js-mode
-                 typescript-mode
-                 react-mode
-                 ) . ,(eglot-alternatives
-                       '(
-                         ("typescript-language-server" "--stdio")
-                         ("vtsls" "--stdio")
-                         ("custom-elements-languageserver" "--stdio")
-                         )))
-              eglot-server-programs
-              :test #'equal)
-
-  ;; (setq-default eglot-workspace-configuration
-  ;;               `((:pylsp . (:configurationSources ["flake8"]
-  ;;                            :plugins (
-  ;;                                      :pycodestyle (:enabled :json-false)
-  ;;                                      :mccabe (:enabled :json-false)
-  ;;                                      :pyflakes (:enabled :json-false)
-  ;;                                      :flake8 (:enabled :json-false
-  ;;                                               :maxLineLength 88)
-  ;;                                      :ruff (:enabled t
-  ;;                                             :lineLength 88)
-  ;;                                      :pydocstyle (:enabled t
-  ;;                                                   :convention "numpy")
-  ;;                                      :yapf (:enabled :json-false)
-  ;;                                      :autopep8 (:enabled :json-false)
-  ;;                                      :black (:enabled t
-  ;;                                              :line_length 88
-  ;;                                              :cache_config t))))
-  ;;                 ))
+  (eldoc-add-command-completions "company-")
   )
 
+
+;; (use-package typescript-mode
+;;   :mode (("\\.ts\\'" . typescript-mode)
+;;          ("\\.tsx\\'" . react-mode)
+;;          ("\\.astro\\'" . astro-mode)
+;;          ))
+
+;; (use-package eglot
+;;   :hook
+;;   ((js-mode
+;;     typescript-mode
+;;     react-mode
+;;     astro-mode
+;;     ) . eglot-ensure)
+;;   :custom
+;;   (global-flycheck-eglot-mode t)
+;;   :config
+;;   (add-to-list 'eglot-server-programs
+;;                `(astro-mode . ,(eglot-alternatives
+;;                                 `(("/Users/mnml/.local/share/nvim/mason/bin/astro-ls" "--stdio")))))
+;;   (add-to-list 'eglot-server-programs `(json-mode . ("vscode-json-language-server" "--stdio")))
+
+;;   ;; (cl-pushnew `((astro-mode
+;;   ;;                ) . ,(eglot-alternatives
+;;   ;;                      '(
+;;   ;;                        ("astro-ls" "--stdio")
+;;   ;;                        ("custom-elements-languageserver" "--stdio")
+;;   ;;                        ("vtsls" "--stdio")
+;;   ;;                        ("typescript-language-server" "--stdio")
+;;   ;;                        )))
+;;   ;;             eglot-server-programs
+;;   ;;             :test #'equal)
+
+;;   ;; (cl-pushnew `((js-mode
+;;   ;;                typescript-mode
+;;   ;;                react-mode
+;;   ;;                ) . ,(eglot-alternatives
+;;   ;;                      '(
+;;   ;;                        ("typescript-language-server" "--stdio")
+;;   ;;                        ("vtsls" "--stdio")
+;;   ;;                        ("custom-elements-languageserver" "--stdio")
+;;   ;;                        )))
+;;   ;;             eglot-server-programs
+;;   ;;             :test #'equal)
+
+;;   ;; (setq-default eglot-workspace-configuration
+;;   ;;               `((:pylsp . (:configurationSources ["flake8"]
+;;   ;;                            :plugins (
+;;   ;;                                      :pycodestyle (:enabled :json-false)
+;;   ;;                                      :mccabe (:enabled :json-false)
+;;   ;;                                      :pyflakes (:enabled :json-false)
+;;   ;;                                      :flake8 (:enabled :json-false
+;;   ;;                                               :maxLineLength 88)
+;;   ;;                                      :ruff (:enabled t
+;;   ;;                                             :lineLength 88)
+;;   ;;                                      :pydocstyle (:enabled t
+;;   ;;                                                   :convention "numpy")
+;;   ;;                                      :yapf (:enabled :json-false)
+;;   ;;                                      :autopep8 (:enabled :json-false)
+;;   ;;                                      :black (:enabled t
+;;   ;;                                              :line_length 88
+;;   ;;                                              :cache_config t))))
+;;   ;;                 ))
+;;   )
+
 (use-package web-mode
+  :init
+  (define-derived-mode react-mode web-mode "React" "A major mode for tsx.")
+  (define-derived-mode astro-mode web-mode "Astro" "A major mode for astro.")
+  :mode ("\\.astro" . astro-mode)
+  :custom
+  (web-mode-enable-auto-closing t)
   :config
   (setq web-mode-content-types-alist
         '(("jsx" . "\\.js[x]?\\'"))))
@@ -348,19 +371,19 @@
 
 (use-package! flycheck-eglot)
 
+(use-package! ucs-normalize)
+
 (use-package! vc-git
+  :after (ucs-normalize)
   :config
   (and (eq system-type 'darwin)
-       (use-package! ucs-normalize)
-       (setq vc-git-log-output-coding-system 'utf-8-hfs
-             ;; vc-git-commits-coding-system 'utf-8-hfs
-             )))
+       (setq vc-git-log-output-coding-system 'utf-8-hfs)))
 
 (use-package! magit
+  :after (ucs-normalize)
   :config
   (setq transient-values '((magit-log:magit-log-mode "-n256" "--graph" "--color" "--decorate")))
   (and (eq system-type 'darwin)
-       (use-package! ucs-normalize)
        (setq magit-git-output-coding-system 'utf-8-hfs)))
 
 ;; (use-package! apheleia
@@ -387,20 +410,24 @@
   ;; (defalias 'denote 'denote-open-or-create)
   )
 
-(use-package! treemacs
-  :config
-  (setq-default
-   doom-themes-treemacs-theme
-   (if window-system
-       (progn
-         ;; "doom-colors"
-         "doom-atom"
-         )
-     ;; "doom-colors"
-     ;; "doom-atom"
-     "Default"
-     ))
-  (treemacs-load-theme doom-themes-treemacs-theme))
+;; (use-package! treemacs
+;;   :config
+;;   (setq-default
+;;    doom-themes-treemacs-theme
+;;    (if window-system
+;;        (progn
+;;          ;; "doom-colors"
+;;          "doom-atom"
+;;          )
+;;      ;; "doom-colors"
+;;      ;; "doom-atom"
+;;      "Default"
+;;      ))
+;;   (treemacs-load-theme doom-themes-treemacs-theme))
+
+(use-package! neotree
+  :custom
+  (neo-window-fixed-size nil))
 
 (use-package! dired-hacks
   :config
@@ -409,29 +436,30 @@
   (use-package! dired-open)
 
   (use-package dired-rainbow
-    :config
-    (progn
-      (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
-      (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
-      (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
-      (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
-      (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
-      (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
-      (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
-      (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
-      (dired-rainbow-define log "#c17d11" ("log"))
-      (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
-      (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
-      (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
-      (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
-      (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-      (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
-      (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
-      (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
-      (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
-      (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
-      (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
-      ))
+    ;; :config
+    ;; (progn
+    ;;   (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+    ;;   (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+    ;;   (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+    ;;   (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+    ;;   (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+    ;;   (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+    ;;   (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+    ;;   (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+    ;;   (dired-rainbow-define log "#c17d11" ("log"))
+    ;;   (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+    ;;   (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+    ;;   (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+    ;;   (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+    ;;   (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+    ;;   (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+    ;;   (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+    ;;   (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+    ;;   (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+    ;;   (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+    ;;   (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
+    ;;   )
+    )
 
   (use-package! dired-subtree
     ;; https://xenodium.com/drill-down-emacs-dired-with-dired-subtree/
@@ -483,7 +511,7 @@
                                 (concat (match-string 1 file-name) "-"))
                            ""))
            (slug (org-roam-node-slug file-node))
-           (new-file (expand-file-name (concat file-time slug ".org")))
+           (new-file (expand-file-name (concat file-time slug "." (file-name-extension old-file))))
            (different-name? (not (string-equal old-file new-file))))
 
         (rename-buffer new-file)
@@ -501,24 +529,23 @@
   :config
   (css-eldoc-enable))
 
-(use-package! eldoc-box
-  :config
-  (eldoc-box-hover-mode)
-  (eldoc-box-hover-at-point-mode)
-  ;; (eldoc-box-help-at-point)
-  )
-(use-package! eldoc-eval
-  :config
-  (eldoc-in-minibuffer-mode 1))
+;; (use-package! eldoc-box
+;;   :config
+;;   (eldoc-box-hover-mode)
+;;   (eldoc-box-hover-at-point-mode)
+;;   ;; (eldoc-box-help-at-point)
+;;   )
+;; (use-package! eldoc-eval
+;;   :config
+;;   (eldoc-in-minibuffer-mode 1))
+;; (use-package! eldoc-overlay
+;;   :custom
+;;   (eldoc-overlay-enable-in-minibuffer t)
+;;   (eldoc-overlay-backend 'inline-docs)
+;;   :config
+;;   (eldoc-overlay-mode -1))
 
-(use-package! inline-docs)
-
-(use-package! eldoc-overlay
-  :custom
-  (eldoc-overlay-enable-in-minibuffer t)
-  (eldoc-overlay-backend 'inline-docs)
-  :config
-  (eldoc-overlay-mode -1))
+;; (use-package! inline-docs)
 
 (use-package! sideline
   :hook
@@ -530,21 +557,23 @@
   (setq
    sideline-delay 0.5
    sideline-backends-skip-current-line t  ; don't display on current line
-   ;; sideline-order-left 'down              ; or 'up
-   ;; sideline-order-right 'up               ; or 'down
+   sideline-order-left 'down              ; or 'up
+   sideline-order-right 'up               ; or 'down
    ;; sideline-format-left "%s   "           ; format for left aligment
    ;; sideline-format-right "   %s"          ; format for right aligment
    sideline-priority 100                  ; overlays' priority
-   sideline-display-backend-name t        ; display the backend name
+   sideline-display-backend-name nil        ; display the backend name
 
-   ;; sideline-backends-left '()
    sideline-backends-right
    '(
-     ;; sideline-eldoc
      sideline-lsp
-     sideline-flycheck
-     ;; sideline-blame
      sideline-color
+     sideline-blame
+     )
+   sideline-backends-left
+   '(
+     ;; sideline-eldoc
+     sideline-flycheck
      )))
 
 (use-package! sideline-lsp
@@ -559,22 +588,92 @@
   :hook
   (flycheck-mode . sideline-flycheck-setup))
 
-;; (use-package! lsp-mode
-;;   :commands
-;;   (lsp lsp-deferred)
-;;   :hook
-;;   ((lsp-mode . lsp-enable-which-key-integration)
-;;    (lsp-mode . sideline-mode))
-;;   :config
-;;   (setq lsp-javascript-suggest-complete-function-calls t)
-;;   (lsp-register-custom-settings
-;;    '(("completions.completeFunctionCalls" t t)))
+(use-package orderless
+  :init
+  ;; Tune the global completion style settings to your liking!
+  ;; This affects the minibuffer and non-lsp completion at point.
+  (setq completion-styles '(orderless partial-completion basic)
+        completion-category-defaults nil
+        completion-category-overrides nil))
 
-;;   (require 'lsp-astro)
-;;   (setq lsp-eldoc-render-all t)
-;;   ;; (setq lsp-ui-sideline-show-code-actions t)
-;;   (setq lsp-enable-text-document-color t)
-;;   (setq lsp-enable-snippet t))
+(use-package! corfu
+  :config
+  ;; (progn ;; debug
+  ;;   (setq debug-on-error t)
+  ;;   (defun force-debug (func &rest args)
+  ;;     (condition-case e
+  ;;         (apply func args)
+  ;;       ((debug error) (signal (car e) (cdr e)))))
+  ;;   (advice-add #'corfu--post-command :around #'force-debug))
+
+  (setq corfu-auto t
+        corfu-quit-no-match 'seperator)
+  (global-corfu-mode +1)
+
+  (progn
+    (defun corfu-enable-in-minibuffer ()
+      "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+      (when (where-is-internal #'completion-at-point (list (current-local-map)))
+        ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+        (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                    corfu-popupinfo-delay nil)
+        (corfu-mode 1)))
+    (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer))
+
+  (progn
+    (corfu-echo-mode +1)
+    (corfu-history-mode +1)
+    (corfu-indexed-mode -1)
+    (corfu-popupinfo-mode +1)))
+
+(use-package! prescient
+  :config
+  (prescient-persist-mode +1)
+
+  (if (featurep 'corfu)
+      (progn
+        (require 'corfu-prescient)
+        (corfu-prescient-mode))))
+
+(use-package! corfu-terminal
+  :if (not (display-graphic-p))
+  :after (corfu)
+  :config
+  (corfu-terminal-mode +1))
+
+;; (use-package! corfu-doc-terminal
+;;   :if (not (display-graphic-p))
+;;   :after (corfu)
+;;   :config
+;;   (corfu-doc-terminal-mode +1))
+
+(use-package! lsp-mode
+  :commands
+  (lsp lsp-deferred)
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults)) '(orderless flex)))
+  :hook
+  (astro-mode . lsp-deferred)
+  (lsp-mode . lsp-enable-which-key-integration)
+  (lsp-mode . sideline-mode)
+
+  (lsp-completion-mode . my/lsp-mode-setup-completion)
+  :custom
+  (lsp-completion-provider :none) ;; we use Corfu!
+  :config
+  ;; (setq eldoc-documentation-functions)
+
+  (setq lsp-javascript-suggest-complete-function-calls t)
+  (lsp-register-custom-settings
+   '(("completions.completeFunctionCalls" t t)))
+
+  (setq lsp-eldoc-render-all t) ; lsp에서 eldoc 보여주려면 t로
+  (setq lsp-enable-text-document-color t)
+  (setq lsp-enable-snippet t)
+  ;; (setq lsp-ui-sideline-show-code-actions t)
+
+  (require 'lsp-astro))
 
 ;; (use-package! lsp-ui
 ;;   :init
@@ -617,12 +716,96 @@
 
 (use-package! zetteldesk
   :config
-  (zetteldesk-mode 1))
-
-(use-package! zetteldesk-kb
-  :config
-  (setq zetteldesk-kb-hydra-prefix (kbd "C-c z")))
+  (zetteldesk-mode 1)
+  (require 'zetteldesk-kb-complete) ; required bibtex-completion
+  (require 'zetteldesk-ref) ; required bibtex-completion
+  (require 'zetteldesk-info)
+  (require 'zetteldesk-remark) ; required org-remark
+  )
 
 (use-package! vterm
   :custom
   (vterm-shell "fish"))
+
+;; (use-package! markdown-preview-mode
+;;   :custom
+;;   (markdown-preview-delay-time 1)
+;;   :config
+;;   (setq markdown-preview-stylesheets (list
+;;                                       "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css"
+;;                                       "http://thomasf.github.io/solarized-css/solarized-light.min.css"))
+;;   ;; (add-to-list 'markdown-preview-javascript '("http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" . async))
+;;   )
+
+(use-package! paradox
+  :custom
+  (paradox-column-width-package 30)
+  (paradox-column-width-version 14)
+  :config (paradox-enable))
+
+(use-package! jenkins
+  :custom
+  (jenkins-url "http://dev-jenkins.lfcp.lfcorp.io/")
+  (jenkins-username "ym.kim")
+  (jenkins-api-token "jenkins-api-tokend239ec17-ff6b-4cc3-87fd-c66496911ecf"))
+
+(use-package! jenkins-watch
+  :custom
+  ((jenkins_api_url "http://dev-jenkins.lfcp.lfcorp.io/api/xml")
+   (jenkins-login-url "http://dev-jenkins.lfcp.lfcorp.io/login")
+   (jenkins-watch-timer-interval 90)))
+
+(use-package! butler
+  :config
+  (add-to-list 'butler-server-list
+               '(jenkins "dev-jenkins"
+                 (server-address . "http://dev-jenkins.lfcp.lfcorp.io/")
+                 (server-user . "ym.kim")
+                 (auth-file . "~/.authinfo.gpg"))))
+
+(use-package flycheck-projectile
+  ;; :config
+  ;; (add-to-list 'popwin:special-display-config
+  ;;              `(,flycheck-projectile-error-list-buffer
+  ;;                :regexp nil :dedicated t :position bottom :stick t
+  ;;                :noselect nil))
+  )
+
+;; (use-package! compile
+;;   :config
+;;   (require 'ansi-color)
+;;   (defun colorize-compilation-buffer ()
+;;     (ansi-color-apply-on-region compilation-filter-start (point-max)))
+;;   (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+;;   )
+
+(progn ;;tide
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+  (if (>= (string-to-number emacs-version) 29)
+      (use-package! tide
+        :after
+        (typescript-mode company flycheck)
+        :hook
+        ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+    (use-package! tide
+      :after
+      (company flycheck)
+      :hook
+      ((typescript-ts-mode . tide-setup)
+       (tsx-ts-mode . tide-setup)
+       (typescript-ts-mode . tide-hl-identifier-mode)
+       (before-save . tide-format-before-save)))))
+
+(use-package! org-roam-ui)

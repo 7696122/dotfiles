@@ -1,5 +1,5 @@
 # -*- mode: gitconfig; -*-
-# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/config][~/.config/git/config:1]]
+# [[file:../../org/dots/dot_git.org::*~/.config/git/config][~/.config/git/config:1]]
 [core]
     precomposeunicode = true
     quotepath = false

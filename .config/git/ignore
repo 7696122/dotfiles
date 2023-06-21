@@ -1,5 +1,5 @@
 # -*- mode: gitignore; -*-
-# [[file:../../org/dots/dot_gitconfig_gitignore_git_설정.org::*~/.config/git/ignore][~/.config/git/ignore:1]]
+# [[file:../../org/dots/dot_git.org::*~/.config/git/ignore][~/.config/git/ignore:1]]
 .DS_Store
 .projectile
 .tern-port

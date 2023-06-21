@@ -127,9 +127,11 @@
   :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
 
 (package! css-eldoc)
-(package! eldoc-box)
-(package! eldoc-eval)
-(package! eldoc-overlay)
+;; (package! eldoc-box)
+;; (package! eldoc-eval)
+;; (package! eldoc-overlay)
+
+;; (package! inline-docs)
 
 (package! httpcode)
 
@@ -142,18 +144,48 @@
 (package! sideline-color :recipe (:host github :repo "emacs-sideline/sideline-color"))
 (package! sideline-blame :recipe (:host github :repo "emacs-sideline/sideline-blame"))
 
-(package! zetteldesk
-  :recipe
-  (:host github :repo "Vidianos-Giannitsis/zetteldesk.el"
-         ;; :files ("*.el")
-         ))
-(package! zetteldesk-kb)
-(package! zetteldesk-ref)
-(package! zetteldesk-info)
-(package! zetteldesk-remark)
+(progn
+  (package! pretty-hydra :recipe (:host github :repo "jerrypnz/major-mode-hydra.el"))
+  (package! bibtex-completion :recipe (:host github :repo "tmalsburg/helm-bibtex"))
+  (package! org-remark :recipe (:host github :repo "nobiot/org-remark"))
+  (package! zetteldesk
+    :recipe
+    (:host github :repo "Vidianos-Giannitsis/zetteldesk.el" :files ("*.el"))))
 
-(package! inline-docs)
 
 (package! eask :recipe (:host github :repo "emacs-eask/eask"))
 (package! eask-mode :recipe (:host github :repo "emacs-eask/eask-mode"))
 (package! feature-mode)
+
+;; (progn
+;;   (package! web-server :recipe (:host github :repo "eschulte/emacs-web-server" :files ("*.el")))
+;;   (package! markdown-preview-mode))
+
+(package! zk)
+(package! zk-desktop)
+(package! zk-index)
+(package! zk-luhmann)
+
+(package! paradox)
+
+(package! jenkins :recipe (:host github :repo "rmuslimov/jenkins.el"))
+(package! jenkins-watch)
+
+(progn
+  (package! deferred :recipe (:host github :repo "kiwanami/emacs-deferred" :files ("*.el")))
+  (package! butler :recipe (:host github :repo "AshtonKem/Butler"))
+  )
+
+(package! flycheck-projectile)
+
+(package! corfu :recipe (:host github :repo "minad/corfu" :files ("*.el" "extensions/*.el")))
+(package! popon)
+(package! corfu-terminal)
+(package! corfu-doc-terminal
+  :recipe
+  (:type git
+   :repo "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
+(package! prescient :recipe (:host github :repo "radian-software/prescient.el" :files ("*.el")))
+
+(package! web-socket :recipe (:host github :repo "ahyatt/emacs-websocket" :files ("*.el")))
+(package! org-roam-ui)
